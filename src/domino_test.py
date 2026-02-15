@@ -39,6 +39,12 @@ class TestCreation(unittest.TestCase):
 
         self.assertTrue(Domino(a, b) == Domino(c, d))
 
+    def test_unable_to_compare(self):
+        a, b = 1, 2
+
+        with self.assertRaises(NotImplementedError):
+            Domino(a, b) == 5
+
     def test_hashable(self):
         dominoes = set()
         dominoes.add( Domino(1, 2) )

@@ -18,7 +18,9 @@ class Domino:
         self.values = frozenset((a, b))
 
     def __eq__(self, other):
-        return self.values == other.values
+        if isinstance(other, Domino):
+            return self.values == other.values
+        raise NotImplementedError("Domino object can only be compared to other Dominoes")
 
     def __hash__(self):
         return hash(self.values)
