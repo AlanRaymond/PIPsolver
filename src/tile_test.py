@@ -2,6 +2,7 @@ import unittest
 
 from tile import Tile
 from domino import Domino
+from domain import Domain
 
 class TestTileAttributes(unittest.TestCase):
     test_id = "B1"
@@ -26,9 +27,9 @@ class TestTileAttributes(unittest.TestCase):
                          neighbours = self.test_neighbours,
                          dominoes = self.test_dominoes)
 
-        expected_output = {1, 2, 3}
+        expected_output = Domain({1, 2, 3}).values
 
-        self.assertEqual(test_tile.values, expected_output)
+        self.assertEqual(test_tile.pips.values, expected_output)
 
 class TestTileIsSingleton(unittest.TestCase):
     
@@ -41,29 +42,25 @@ class TestTileIsSingleton(unittest.TestCase):
     tile_c = Tile(id = "C",
                   neighbours = {"D"},
                   dominoes = {Domino(1, 2)})
-    tile_c.values = {1,}
-
-    def test_invalid_input(self):
-        with self.assertRaises(ValueError):
-            self.tile_a.is_singleton('invalid')
+    tile_c.pips = Domain({1,})
 
     def test_neighbours_singleton(self):
-        self.assertTrue(self.tile_a.is_singleton('neighbours'))
+        self.assertIs(self.tile_a.neighbours.is_singleton, True)
 
     def test_dominoes_singleton(self):
-        self.assertTrue(self.tile_b.is_singleton('dominoes'))
+        self.assertIs(self.tile_b.dominoes.is_singleton, True)
 
     def test_values_not_singleton(self):
-        self.assertFalse(self.tile_b.is_singleton('values'))
+        self.assertIs(self.tile_b.pips.is_singleton, False)
 
     def test_values_singleton(self):        
-        self.assertTrue(self.tile_c.is_singleton('values'))
+        self.assertIs(self.tile_c.pips.is_singleton, True)
 
     def test_all_not_singleton(self):
-        self.assertFalse(self.tile_a.is_singleton('all'))
+        self.assertIs(self.tile_a.is_singleton, False)
 
     def test_all_singleton(self):
-        self.assertTrue(self.tile_c.is_singleton('all'))
+        self.assertIs(self.tile_c.is_singleton, True)
 
 
 if __name__ == "__main__":
