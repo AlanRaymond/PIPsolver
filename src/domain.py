@@ -39,10 +39,11 @@ class Domain:
         return self.size == 1
 
     @property
-    def check_for_invalid_collapse(self) -> bool:
-        if self.is_empty:
-            raise ValueError("Domain collapsed to empty after removal.")
-        return True
+    def datatype(self):
+        if self.size == 0:
+            return None
+        sample_element = list(self._values)[0]
+        return type(sample_element)
 
     # ==========================================
     # METHODS
@@ -51,26 +52,39 @@ class Domain:
     def intersects(self, other: set) -> bool:
         return bool(self._values & other)
 
+
     def remove(self, value) -> bool:
-        """Remove a single value from the domain. Useful to constrain neighbours"""
+        """Remove a single value from the domain. Useful to constrain neighbours.
+        Only mutates if the domain doesn't collapse to a null set after the operation. Returns True if changed."""
+        if type(value) != self.datatype:
+            return False
+
         if value not in self._values:
             return False
+
+        collapse_to_null = (self.size == 1) and (value in self._values)
+        if collapse_to_null:
+            return False
+
+        new_values = self._values.copy()
+        new_values.remove(value)
         
-        before = self.size
-        self._values.remove(value)
-        self.check_for_invalid_collapse()
-        changed = self.size != before
-        return changed
+        self._values = new_values        
 
-    def restrict_to(self, allowed) -> bool:
-        """ Uses set operations to restrict the domain. Useful for dominoes or pips sets."""
-        allowed_set = set(allowed)
+        return True
 
-        before = self.size
-        self._values.intersection_update(allowed_set)
-        self.check_for_invalid_collapse()
-        changed = self.size != before
-        return changed
+
+    def restrict_to(self, allowed: set) -> bool:
+        """ Uses set operations to restrict the domain. Useful for dominoes or pips sets.
+        Only mutates if the domain doesn't collapse to a null set after the operation. Returns True if changed."""
+        new_values = self._values.copy() & allowed
+        
+        if new_values == set():
+            return False
+
+        self._values = new_values
+        return True
+
 
     def copy(self) -> "Domain":
         return Domain(self._values)
@@ -78,6 +92,9 @@ class Domain:
     # ==========================================
     # OPERATIONS
     # ==========================================
+    def __contains__(self, item):
+        return item in self._values
+
     def __iter__(self):
         """Enables less verbose iteration."""
         try:
