@@ -1,6 +1,6 @@
 import unittest
 
-from constraint import Condition, constraint
+from functions import Condition, constraint
 from tile import Tile
 from domino import Domino
 from domain import Domain
@@ -49,7 +49,7 @@ class TestConstraintValidation(unittest.TestCase):
         with self.assertRaises(ValueError):
             constraint_tile1(self.tile2)
 
-
+# TODO: Add assertions to check that the domino domain is being mutated correctly for each condition
 class TestConstraintFunction(unittest.TestCase):
     def setUp(self):
         self.tile1 = Tile(id = "A1", neighbours = {"A2", "A3"})

@@ -1,6 +1,10 @@
 from domino import Domino
 from domain import Domain
 
+def all_dominoes() -> set[Domino]:
+    return {Domino(i,j) for i in range(7) for j in range(i, 7)}
+
+
 class Tile:
     '''
     Tiles are parts of the gameboard where a domino can be placed. A single Domino spans two Tiles.
@@ -9,7 +13,7 @@ class Tile:
     - dominoes: a set of valid dominoes that may be placed in the tile
     - values: a set of possible values that the tile may have. This helps track orientation of the domino.
     '''
-    def __init__(self, id: str, neighbours: set[str], dominoes: set[Domino]):
+    def __init__(self, id: str, neighbours: set[str], dominoes: set[Domino] = all_dominoes()):
         self.id = id
         self.neighbours = Domain(neighbours)
         self.dominoes = Domain(dominoes)

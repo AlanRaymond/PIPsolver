@@ -1,6 +1,7 @@
 from itertools import product
 from enum import Enum, auto
 from tile import Tile
+from domino import Domino
 
 class Condition(Enum):
     EQUAL_TO = auto(),
@@ -9,6 +10,22 @@ class Condition(Enum):
     ALL_EQUAL = auto(),
     ALL_NOT_EQUAL = auto()
 
+def update_pips(tile: Tile) -> bool:
+    # TODO: Write unit tests for this function
+    dominoes_values = set()
+    for domino in tile.dominoes.values:
+        dominoes_values.update(domino.values)
+    intersection = tile.pips.values.intersection(dominoes_values)
+    if intersection != tile.pips.values:
+        return tile.pips.restrict_to(intersection)
+    return False
+
+def update_dominoes(tile: Tile) -> bool:
+    # TODO: Write unit tests for this function
+    for domino in tile.dominoes.values:
+        if not domino.values.issubset(tile.pips.values):
+            return tile.dominoes.remove(domino)
+    return False
 
 def constraint(tiles: list[Tile],
                target_value: int | None = None,
@@ -96,16 +113,50 @@ def constraint(tiles: list[Tile],
     # CURRIED FUNCTION TO MUTATE TILE(S)
     # ------------------------------------------
     
-    def constrain(tile: Tile) -> bool:
+    def select_tile(tile: Tile) -> bool:
         if tile not in tiles:
             raise ValueError(f"Constraint is not related to {tile}")
 
         allowed_set = allowed_sets[tile]
         
         if allowed_set != tile.pips.values:
-            tile.pips.restrict_to(allowed_set) # mutation occurs
-            return True
+            has_changed =tile.pips.restrict_to(allowed_set) # mutation occurs
+            if has_changed:
+                update_dominoes(tile)
+            return has_changed
 
         return False
 
-    return constrain
+    return select_tile
+
+
+def exclude_domino(domino: Domino):
+    # TODO: Write unit tests for this function
+    def select_tile(tile: Tile) -> bool:
+        has_changed = tile.dominoes.remove(domino)
+        if has_changed:
+            update_pips(tile)
+        return has_changed
+    return select_tile
+
+def exclude_neighbour(neighbour: Tile):
+    # TODO: Write unit tests for this function
+    def select_tile(tile: Tile) -> bool:
+        has_changed = tile.neighbours.remove(neighbour)
+        return has_changed
+    return select_tile
+
+def restrict_dominoes(allowed_set: set[Domino]):
+    # TODO: Write unit tests for this function
+    def select_tile(tile: Tile) -> bool:
+        has_changed = tile.dominoes.restrict_to(allowed_set)
+        if has_changed:
+            update_pips(tile)
+        return has_changed
+    return select_tile
+
+def pair_tile(tile1: Tile):
+    # TODO: Write unit tests for this function
+    def select_tile(tile2: Tile) -> bool:
+        return tile2.neighbours.restrict_to({tile1.id})
+    return select_tile
