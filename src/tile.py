@@ -1,5 +1,5 @@
-from domino import Domino
-from domain import Domain
+from .domino import Domino
+from .domain import Domain
 
 def all_dominoes() -> set[Domino]:
     return {Domino(i,j) for i in range(7) for j in range(i, 7)}
@@ -30,3 +30,9 @@ class Tile:
     @property
     def is_singleton(self):
         return self.neighbours.is_singleton and self.dominoes.is_singleton and self.pips.is_singleton
+    
+    def __str__(self):
+        return f"Tile(id={self.id}, neighbours={self.neighbours.values}, pips={self.pips.values}, count_dominoes={self.dominoes.size})"
+    
+    def __repr__(self):
+        return self.__str__()

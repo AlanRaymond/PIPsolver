@@ -1,7 +1,8 @@
 from itertools import product
 from enum import Enum, auto
-from tile import Tile
-from domino import Domino
+
+from .tile import Tile
+from .domino import Domino
 
 class Condition(Enum):
     EQUAL_TO = auto(),
@@ -65,7 +66,7 @@ def constraint(tiles: list[Tile],
         constraint_requires_value = condition not in {Condition.ALL_EQUAL, Condition.ALL_NOT_EQUAL}
 
         if target_value_not_specified and constraint_requires_value:
-            raise ValueError(f"Specify a target value. Currently: {self.target_value}")
+            raise ValueError(f"Specify a target value. Currently: {target_value}")
         
         match condition:
             case Condition.EQUAL_TO:
