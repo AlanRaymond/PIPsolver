@@ -16,7 +16,7 @@ class Domain:
         return self._values
 
     @values.setter
-    def values(self, values) -> set:
+    def values(self, values) -> bool:
         datatypes = {type(value) for value in values}
 
         all_same_type = len(datatypes) == 1
@@ -25,6 +25,8 @@ class Domain:
             raise TypeError("All items in the domain need to be the same type")
 
         self._values = set(values)
+        
+        return True
 
     @property
     def size(self) -> int:
@@ -75,8 +77,11 @@ class Domain:
 
 
     def restrict_to(self, allowed: set) -> bool:
-        """ Uses set operations to restrict the domain. Useful for dominoes or pips sets.
-        Only mutates if the domain doesn't collapse to a null set after the operation. Returns True if changed."""
+        """
+        Uses set operations to restrict the domain. Useful for dominoes or pips sets.
+        Only mutates if the domain doesn't collapse to a null set after the operation.
+        Returns True if changed.
+        """
         new_values = self._values.copy() & allowed
         
         if new_values == set():
@@ -103,3 +108,5 @@ class Domain:
             sorted_values = list(self.values)
         yield from sorted_values
 
+    def __repr__(self):
+        return f"Domain(Type: {self.datatype}, Count: {self.size})"
