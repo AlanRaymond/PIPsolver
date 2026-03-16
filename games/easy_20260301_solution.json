@@ -1,0 +1,62 @@
+{
+	{
+		"id": "A2",
+		"neighbours": ["B2"],
+		"dominoes": [0, 3],
+		"pips": [0]
+	},
+	{
+		"id": "B1",
+		"neighbours": ["C1"],
+		"dominoes": [2, 2],
+		"pips": [2]
+	},
+	{
+		"id": "B2",
+		"neighbours": ["A2"],
+		"dominoes": [0, 3],
+		"pips": [3]
+	},
+	{
+		"id": "B3",
+		"neighbours": ["C3"],
+		"dominoes": [2, 6],
+		"pips": [6]
+	},
+	{
+		"id": "B4",
+		"neighbours": ["B5"],
+		"dominoes": [3, 6],
+		"pips": [6]
+	},
+	{
+		"id": "B5",
+		"neighbours": ["B4"],
+		"dominoes": [3, 6],
+		"pips": [3]
+	},
+	{
+		"id": "C1",
+		"neighbours": ["B1"],
+		"dominoes": [2, 2],
+		"pips": [2]
+	},
+	{
+		"id": "C2",
+		"neighbours": ["D2"],
+		"dominoes": [2, 5],
+		"pips": [2]
+	},
+	{
+		"id": "C3",
+		"neighbours": ["B3"],
+		"dominoes": [2, 6],
+		"pips": [2]
+	},
+	{
+		"id": "D2",
+		"neighbours": ["C2"],
+		"dominoes": [2, 5],
+		"pips": [5]
+	}
+}

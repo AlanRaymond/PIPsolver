@@ -1,0 +1,45 @@
+{
+	"dominoes": [
+		[2, 2],
+		[2, 5],
+		[2, 6],
+		[3, 6],
+		[0, 3]
+	],
+
+	"tiles": { 
+		"A2": ["B2"],
+		"B1": ["B2", "C1"],
+		"B2": ["A2", "B1", "C2", "B3"],
+		"B3": ["B2", "C3", "B4"],
+		"B4": ["B3", "B5"],
+		"B5": ["B4"],
+		"C1": ["B1", "C2"],
+		"C2": ["C1", "B2", "C3", "D2"],
+		"C3": ["C2", "B3"],
+		"D2": ["C2"]
+	},
+	
+	"constraints": [
+		{
+			"tiles": ["A2"],
+			"target_value": 0,
+			"condition": "EQUAL_TO"
+		},
+		{
+			"tiles": ["B1", "C1", "C2", "C3"],
+			"target_value": null,
+			"condition": "ALL_EQUAL"
+		},
+		{
+			"tiles": ["B3", "B4"],
+			"target_value": null,
+			"condition": "ALL_EQUAL"
+		},
+		{
+			"tiles": ["B5"],
+			"target_value": 3,
+			"condition": "EQUAL_TO"
+		}
+	]
+}
