@@ -9,10 +9,10 @@
 #       of the domains and restrict the domains.
 
 from ConstraintSolver.constructor import Gamedata
-from ConstraintSolver.functions import apply_constraint, get_edges_for_node, update_edge_domain
+from ConstraintSolver.functions import apply_constraint, exclude_domino, get_edges_for_node, get_nodes_for_edge, restrict_neighbours, update_edge_domain, update_node_domain
 
 from .domino import Domino
-from .domain import Domain, DomainEdge
+from .domain import DomainEdge, DomainNode
 from .constraints import Constraint
 
 class Solver:
@@ -23,6 +23,26 @@ class Solver:
         
         self.dominoes = data.dominoes
         
+        # Initialise game state
+        self.apply_all_constraints()
+    
+    @property
+    def nodes(self) -> iter:
+        return [node for node in self.variables 
+                if isinstance(self.domains[node], DomainNode)]
+        
+    @property
+    def edges(self) -> iter:
+        return [edge for edge in self.variables
+                if isinstance(self.domains[edge], DomainEdge)]
+    
+    @property
+    def singleton_edges(self) -> iter:
+        return [edge for edge in self.edges
+                if self.domains[edge].is_singleton]
+    
+    # ---------------------------------------------------------------------
+    
     def apply_all_constraints(self) -> set[str]: # O(n_constraints * n_changed_nodes * n_edges_per_node)
         # Constraints are applied to the node domains.
         # If a node domain changes, then the edges need to be updated as well.
@@ -34,14 +54,49 @@ class Solver:
                     changed_edge = update_edge_domain(edge, self.domains)
                     changed_edges.add(changed_edge)
         return changed_edges
-
-                    
-                                      
-    def is_solved(self) -> bool:
-        solved = all(domain.is_singleton for variable, domain in self.domains
-                     if variable in self.variables)
-
-        return solved
+    
+    def collapse_neighbourhood(self) -> bool:
+        collapsable = True
+        while collapsable:
+            collapsable = restrict_neighbours(self.nodes, self.domains, self.variables)
+        return True
+    
+    def exclude_dominoes(self) -> None:
+        '''
+        Checks for edge domains that are singletons and removes domino from all other domains.
+        Keeps track of edges that have already been processed.
+        '''
+        checked_edges = set()
+        unchecked_edges = set(self.singleton_edges).difference(checked_edges)
+        
+        while unchecked_edges:
+            edge = unchecked_edges.pop()
+            checked_edges.add(edge)
+            edges = exclude_domino(edge, self.domains, self.variables)
+            for e in edges:
+                nodes = set(get_nodes_for_edge(e, self.domains))
+                for node in nodes:
+                    update_node_domain(node, self.domains)
+    
+    def update_all_node_domains(self) -> None:
+        '''
+        Updates all node domains to match the values from their corresponding edges.
+        Used to maintain data integrity.
+        '''
+        if all(node.is_singleton for name, node in self.domains.items()
+               if name in self.nodes):
+            return
+        for node in self.nodes:
+            update_node_domain(node, self.domains)
+        
+    # -----------------------------------------------------------------
+    
+    def advance(self) -> bool:
+        # collapse all neighbours
+        self.collapse_neighbourhood()
+        self.exclude_dominoes()
+        self.update_all_node_domains()
+        self.apply_all_constraints()
                     
                     
     def __str__(self):

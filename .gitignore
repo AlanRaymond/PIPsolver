@@ -5,7 +5,10 @@ build/
 dist/
 wheels/
 *.egg-info
-tests/
+
 
 # Virtual environments
 .venv
+
+# Project Management
+TODO.md

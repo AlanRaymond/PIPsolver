@@ -12,9 +12,6 @@ class Domain:
             raise TypeError("All items in the domain need to be the same type")
 
         self._values = values
-        # A flag to track if the domain has changed during an operation.
-        # Used to only trigger further constraint applications when necessary.
-        self.has_changed = False
 
     @property
     def values(self) -> set:
@@ -47,7 +44,7 @@ class Domain:
 
     @property
     def datatype(self):
-        if self.size == 0:
+        if self.is_empty:
             return None
         sample_element = list(self._values)[0]
         return type(sample_element)
@@ -56,12 +53,16 @@ class Domain:
     # METHODS
     # ==========================================
     def remove(self, value) -> bool:
-        """Remove a single value from the domain. Useful to constrain neighbours.
-        Only mutates if the domain doesn't collapse to a null set after the operation. Returns True if changed."""
+        """
+        Remove a single value from the domain.
+        Returns True if changed.
+        """
         if type(value) != self.datatype:
+            # do nothing
             return False
 
         if value not in self._values:
+            # do nothing
             return False
 
         collapse_to_null = (self.size == 1) and (value in self._values)
@@ -78,17 +79,18 @@ class Domain:
 
     def restrict_to(self, allowed: set) -> bool:
         """
-        Uses set operations to restrict the domain. Useful for dominoes or pips sets.
-        Only mutates if the domain doesn't collapse to a null set after the operation.
+        Uses set operations to restrict the domain.
         Returns True if changed.
         """
-        new_values = self._values.copy() & allowed
+        original_values = self._values.copy()
+        new_values = original_values & allowed
         
-        if new_values == set():
-            return False
-
-        self._values = new_values
-        return True
+        has_changed = new_values != original_values
+        
+        if has_changed:
+            self._values = new_values
+        
+        return has_changed
 
 
     def copy(self) -> "Domain":
@@ -138,22 +140,25 @@ class DomainEdge(Domain): # Domino
         if self.datatype is not None and self.datatype != Domino:
             raise TypeError("All items in the domain need to be of type Domino")
         
-        # get functions used to restrict node domains.
-        def get_values_a() -> set:
-            return {domino.values[0] for domino in self._values}
-        def get_values_b() -> set:
-            return {domino.values[1] for domino in self._values}
+    ### NOT CURRENTLY USED
+    # get functions used to restrict node domains.
+    @property
+    def values_a(self) -> set:
+        return {domino.values[0] for domino in self._values}
+    @property
+    def values_b(self) -> set:
+        return {domino.values[1] for domino in self._values}
         
         # set functions used to restrict self.values.
-        def update_values(node: str, values: set) -> bool:
-            if self.datatype is not None and self.datatype != Domino:
-                raise TypeError("All items in the domain need to be of type Domino")
-            if node not in (self.node_a, self.node_b):
-                raise ValueError("Node not in edge")
+    def update_values(self, node: str, values: set) -> bool:
+        if self.datatype is not None and self.datatype != Domino:
+            raise TypeError("All items in the domain need to be of type Domino")
+        if node not in (self.node_a, self.node_b):
+            raise ValueError("Node not in edge")
             
-            position = 0 if node == self.node_a else 1
+        position = 0 if node == self.node_a else 1
             
-            restricted_dominoes = {domino for domino in self._values
-                                   if domino.values[position] in values}
+        restricted_dominoes = {domino for domino in self._values
+                               if domino.values[position] in values}
             
-            return self.restrict_to(restricted_dominoes)
+        return self.restrict_to(restricted_dominoes)

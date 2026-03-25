@@ -9,12 +9,22 @@ class Gamedata:
 
         self.dominoes = self.generate_dominoes(data)
         nodes = self.generate_nodes(data)
-        edges = self.generate_edges(data, nodes, self.dominoes)
+        edges = self.generate_edges(data, self.dominoes)
         constraints = self.generate_constraints(data)
+        
+        self.values = self.generate_values(data)
         
         self.variables = Domain(set().union(nodes.keys(), edges.keys()))
         self.domains = {**nodes, **edges}
         self.constraints = constraints
+        
+    def generate_values(self, game_data) -> dict[int, int]:
+        """Used to initialise node domains with only available values"""
+        value_dict = {}
+        for domino in game_data["dominoes"]:
+            for pip in domino:
+                value_dict[pip] = value_dict.get(pip, 0) + 1
+        return value_dict
 
     def generate_dominoes(self, game_data) -> set[Domino]:
         dominoes = set()
@@ -25,12 +35,13 @@ class Gamedata:
         return dominoes
 
     def generate_nodes(self, game_data) -> dict[str, DomainNode]:
+        values = set(int(v) for v in self.generate_values(game_data).keys())
         nodes = {}
         for node in game_data["tiles"].keys():
-            nodes[node] = DomainNode()
+            nodes[node] = DomainNode(values)
         return nodes
 
-    def generate_edges(self, game_data, nodes: dict[str, DomainNode], dominoes: set[Domino]) -> dict[str, DomainEdge]:
+    def generate_edges(self, game_data, dominoes: set[Domino]) -> dict[str, DomainEdge]:
         edges = {}
         for node, neighbours in game_data["tiles"].items():
             for neighbour in neighbours:
