@@ -91,13 +91,11 @@ class Solver:
         
     # -----------------------------------------------------------------
     
-    def advance(self) -> bool:
-        # collapse all neighbours
+    def advance(self) -> None:
         self.collapse_neighbourhood()
         self.exclude_dominoes()
         self.update_all_node_domains()
-        self.apply_all_constraints()
-                    
+        self.apply_all_constraints()            
                     
     def __str__(self):
         string = "Gamestate:\n"

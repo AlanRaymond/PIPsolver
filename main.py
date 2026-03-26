@@ -4,7 +4,7 @@ from ConstraintSolver.constructor import Gamedata
 from ConstraintSolver.solver import Solver
 
 def main():
-    FILENAME = "games/easy_20260301.json"
+    FILENAME = "games/medium_20260326.json"
     
     try:
         with open(FILENAME, "r") as f:

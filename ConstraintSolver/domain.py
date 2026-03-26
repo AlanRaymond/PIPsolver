@@ -64,11 +64,11 @@ class Domain:
         if value not in self._values:
             # do nothing
             return False
-
+        '''
         collapse_to_null = (self.size == 1) and (value in self._values)
         if collapse_to_null:
             raise ValueError(f"Domain collapsed to a null set.")
-
+        '''
         new_values = self._values.copy()
         new_values.remove(value)
         

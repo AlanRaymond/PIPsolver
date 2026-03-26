@@ -14,7 +14,7 @@ from .domino import Domino
 
 def apply_constraint(domains: dict[str, Domain], constraint: Constraint) -> set[str]:
     nodes = tuple(domains[node] for node in constraint.nodes)
-    allowed_sets = constraint.relation(nodes)
+    allowed_sets = constraint.relation()(nodes)
         
     changed_nodes = set()
     for node, allowed_values in zip(constraint.nodes, allowed_sets):

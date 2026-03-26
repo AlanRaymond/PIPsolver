@@ -1,0 +1,66 @@
+{
+	"dominoes": [
+		[0, 6],
+		[0, 0],
+		[3, 1],
+		[2, 2],
+        [3, 3],
+        [5, 6],
+        [1, 5]
+	],
+
+	"tiles": { 
+		"A1": ["A2"],
+		"A2": ["A1", "B2"],
+		"A5": ["A6", "B5"],
+		"A6": ["A5"],
+		"B2": ["A2", "B3"],
+		"B3": ["B2", "B3", "C3"],
+		"B4": ["B3", "B5", "C4"],
+		"B5": ["B4", "A5"],
+        "C3": ["B3", "C4", "D3"],
+        "C4": ["C3", "B4", "D4"],
+        "D3": ["C3", "D4", "E3"],
+        "D4": ["D3", "C4", "E4"],
+        "E3": ["E4", "D3"],
+        "E4": ["E3", "D4"]
+	},
+	
+	"constraints": [
+		{
+			"tiles": ["A2", "B2"],
+			"target_value": 3,
+			"condition": "EQUAL_TO"
+		},
+		{
+			"tiles": ["B3", "C3"],
+			"target_value": null,
+			"condition": "ALL_EQUAL"
+		},
+		{
+			"tiles": ["D3", "E3"],
+			"target_value": null,
+			"condition": "ALL_EQUAL"
+		},
+		{
+			"tiles": ["C4", "D4"],
+			"target_value": null,
+			"condition": "ALL_EQUAL"
+		},
+        {
+			"tiles": ["E4"],
+			"target_value": 4,
+			"condition": "GREATER_THAN"
+		},
+        {
+			"tiles": ["A5", "B4", "B5"],
+			"target_value": 12,
+			"condition": "EQUAL_TO"
+		},
+        {
+			"tiles": ["A6"],
+			"target_value": 4,
+			"condition": "GREATER_THAN"
+		}
+	]
+}
